@@ -56,6 +56,37 @@ if "role" not in st.session_state:
 if "show_form" not in st.session_state:
     st.session_state.show_form = False
 
+DOCTOR_PROFILE = {
+    "name": "Dr. John Doe",
+    "specialty": "Consultant Physician",
+
+    "description": """
+Dr. John Doe is a consultant physician specializing in internal medicine 
+with over 12 years of clinical experience in diagnostics, patient care,
+and preventive healthcare.
+""",
+
+    "education": [
+        "MD – Harvard Medical School",
+        "Bachelor of Medicine – University of Oxford",
+        "Board Certified Internal Medicine"
+    ],
+
+    "achievements": [
+        "Published 30+ medical research papers",
+        "Top Physician Award 2022",
+        "Member of American College of Physicians"
+    ],
+
+    "stats": {
+        "Patients Treated": "1200+",
+        "Research Papers": "34",
+        "Rating": "⭐ 4.9"
+    },
+
+    "photo": "doctor.jpg"
+}
+
 # -------------------------
 # LOGIN PAGE
 # -------------------------
@@ -117,15 +148,49 @@ if st.session_state.auth and st.session_state.role == "doctor":
     )
 
     # Homepage
-    if page == "Homepage":
+   if page == "Homepage":
 
-        st.title("Doctor Dashboard")
+    st.title("Doctor Profile")
 
-        st.metric("Patients Today", "18")
-        st.metric("Completed Tasks", "7")
-        st.metric("Pending Alerts", "3")
+    col1, col2 = st.columns([1,2])
 
-        st.write("Welcome to M-FLO Clinical Workspace.")
+    # Doctor Photo
+    with col1:
+        st.image(DOCTOR_PROFILE["photo"], width=220)
+
+    # Doctor Info
+    with col2:
+
+        st.subheader(DOCTOR_PROFILE["name"])
+        st.write(DOCTOR_PROFILE["specialty"])
+
+        st.markdown("### Description")
+        st.write(DOCTOR_PROFILE["description"])
+
+    st.divider()
+
+    # Education
+    st.markdown("### 🎓 Education")
+    for edu in DOCTOR_PROFILE["education"]:
+        st.write("•", edu)
+
+    st.divider()
+
+    # Achievements
+    st.markdown("### 🏆 Achievements")
+    for a in DOCTOR_PROFILE["achievements"]:
+        st.write("•", a)
+
+    st.divider()
+
+    # Stats Cards
+    st.markdown("### 📊 Professional Statistics")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Patients Treated", DOCTOR_PROFILE["stats"]["Patients Treated"])
+    col2.metric("Research Papers", DOCTOR_PROFILE["stats"]["Research Papers"])
+    col3.metric("Rating", DOCTOR_PROFILE["stats"]["Rating"])
 
     # Tasks
     elif page == "Tasks":
