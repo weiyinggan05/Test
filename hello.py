@@ -217,37 +217,53 @@ st.markdown(f"""
 
 # 7. APP FLOW
 if not st.session_state.auth:
+
     with st.form("login_form", clear_on_submit=False):
+
         if logo_b64:
-            st.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{logo_b64}" style="width:110px; margin-bottom:15px;"></div>', unsafe_allow_html=True)
-        st.markdown('<p style="color:#93C572; font-weight:800; font-size:20px; text-align:center;">67+2 PODCAST</p>', unsafe_allow_html=True)
-        st.markdown('<h1 style="color:#124D41; font-size:55px; font-weight:900; text-align:center; margin:0; letter-spacing:-3px;">M-FLO</h1>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div style="text-align:center;"><img src="data:image/png;base64,{logo_b64}" style="width:110px; margin-bottom:15px;"></div>',
+                unsafe_allow_html=True
+            )
+
+        st.markdown(
+            '<p style="color:#93C572; font-weight:800; font-size:20px; text-align:center;">67+2 PODCAST</p>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<h1 style="color:#124D41; font-size:55px; font-weight:900; text-align:center; margin:0; letter-spacing:-3px;">M-FLO</h1>',
+            unsafe_allow_html=True
+        )
+
         u = st.text_input("ID", placeholder="Enter ID", label_visibility="collapsed")
         p = st.text_input("Key", type="password", placeholder="Security Key", label_visibility="collapsed")
+
         if st.form_submit_button("AUTHENTICATE SYSTEM"):
+
             doctors = load_doctors()
 
-user = doctors[
-    (doctors["username"] == u) &
-    (doctors["password"] == p)
-]
+            user = doctors[
+                (doctors["username"] == u) &
+                (doctors["password"] == p)
+            ]
 
-if not user.empty:
+            if not user.empty:
 
-    st.session_state.auth = True
-    st.session_state.current_user = u
+                st.session_state.auth = True
+                st.session_state.current_user = u
 
-    following_str = user.iloc[0]["following"]
+                following_str = user.iloc[0]["following"]
 
-    if pd.isna(following_str) or following_str == "":
-        st.session_state.following_list = set()
-    else:
-        st.session_state.following_list = set(following_str.split("|"))
+                if pd.isna(following_str) or following_str == "":
+                    st.session_state.following_list = set()
+                else:
+                    st.session_state.following_list = set(following_str.split("|"))
 
-    st.rerun()
+                st.rerun()
 
-else:
-    st.error("Invalid ID or Security Key")
+            else:
+                st.error("Invalid ID or Security Key")
                 st.session_state.auth = True; st.rerun()
 else:
     today_str = date.today().strftime("%Y-%m-%d")
