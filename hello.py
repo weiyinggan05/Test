@@ -143,8 +143,7 @@ if st.session_state.auth and st.session_state.role == "doctor":
         for t in st.session_state.tasks:
             st.write("•",t)
 
-    # Reservations
-    elif page == "Reservations":
+  elif page == "Reservations":
 
     st.title("Patient Reservations")
 
@@ -193,7 +192,6 @@ if st.session_state.auth and st.session_state.role == "doctor":
     df = pd.DataFrame(st.session_state.reservations)
 
     st.dataframe(df, use_container_width=True)
-
     # Alerts
     elif page == "Alerts":
 
