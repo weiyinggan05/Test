@@ -52,8 +52,7 @@ DOCTOR_PROFILE = {
 
     "description": """
 Dr. John Doe is a consultant physician specializing in internal medicine 
-with over 12 years of clinical experience in diagnostics, patient care,
-and preventive healthcare.
+with over 12 years of clinical experience in diagnostics and patient care.
 """,
 
     "education": [
@@ -68,7 +67,7 @@ and preventive healthcare.
         "Rating": "⭐ 4.9"
     },
 
-    "photo": "doctor.jpg"
+    "photo": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
 }
 
 # -------------------------
