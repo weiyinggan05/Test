@@ -147,8 +147,8 @@ if st.session_state.auth and st.session_state.role == "doctor":
         ["Homepage","Tasks","Reservations","Alerts","Community"]
     )
 
-    # Homepage
-   if page == "Homepage":
+    #Homepage
+    if page == "Homepage":
 
     st.title("Doctor Profile")
 
