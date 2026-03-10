@@ -53,8 +53,8 @@ if "auth" not in st.session_state:
 if "role" not in st.session_state:
     st.session_state.role = None
 
-if "page" not in st.session_state:
-    st.session_state.page = "Homepage"
+if "show_form" not in st.session_state:
+    st.session_state.show_form = False
 
 # -------------------------
 # LOGIN PAGE
@@ -141,57 +141,51 @@ if st.session_state.auth and st.session_state.role == "doctor":
             st.session_state.tasks.append(task)
 
         for t in st.session_state.tasks:
-            st.write("•",t)
+            st.write("•", t)
 
-  elif page == "Reservations":
+    # Reservations
+    elif page == "Reservations":
 
-    st.title("Patient Reservations")
+        st.title("Patient Reservations")
 
-    # 初始化 reservation list
-    if "reservations" not in st.session_state:
-        st.session_state.reservations = [
-            {"Time":"09:00","Patient":"Alice Tan","Status":"Confirmed"},
-            {"Time":"11:30","Patient":"Bob Smith","Status":"Pending"}
-        ]
+        if "reservations" not in st.session_state:
+            st.session_state.reservations = [
+                {"Time":"09:00","Patient":"Alice Tan","Status":"Confirmed"},
+                {"Time":"11:30","Patient":"Bob Smith","Status":"Pending"}
+            ]
 
-    # Add reservation button
-    if st.button("➕ Add Reservation"):
-        st.session_state.show_form = True
+        if st.button("➕ Add Reservation"):
+            st.session_state.show_form = True
 
-    # Form
-    if st.session_state.get("show_form", False):
+        if st.session_state.show_form:
 
-        with st.form("reservation_form"):
+            with st.form("reservation_form"):
 
-            patient = st.text_input("Patient Name")
+                patient = st.text_input("Patient Name")
+                time = st.text_input("Time (example: 14:30)")
+                status = st.selectbox(
+                    "Status",
+                    ["Confirmed","Pending","Cancelled"]
+                )
 
-            time = st.text_input("Time (example: 14:30)")
+                submit = st.form_submit_button("Create Reservation")
 
-            status = st.selectbox(
-                "Status",
-                ["Confirmed","Pending","Cancelled"]
-            )
+                if submit:
 
-            submit = st.form_submit_button("Create Reservation")
+                    new_reservation = {
+                        "Time": time,
+                        "Patient": patient,
+                        "Status": status
+                    }
 
-            if submit:
+                    st.session_state.reservations.append(new_reservation)
+                    st.session_state.show_form = False
 
-                new_reservation = {
-                    "Time": time,
-                    "Patient": patient,
-                    "Status": status
-                }
+                    st.success("Reservation added")
 
-                st.session_state.reservations.append(new_reservation)
+        df = pd.DataFrame(st.session_state.reservations)
+        st.dataframe(df, use_container_width=True)
 
-                st.session_state.show_form = False
-
-                st.success("Reservation added")
-
-    # Show table
-    df = pd.DataFrame(st.session_state.reservations)
-
-    st.dataframe(df, use_container_width=True)
     # Alerts
     elif page == "Alerts":
 
@@ -204,7 +198,6 @@ if st.session_state.auth and st.session_state.role == "doctor":
         ]
 
         df = pd.DataFrame(alerts)
-
         st.dataframe(df,use_container_width=True)
 
     # Community
@@ -221,7 +214,7 @@ if st.session_state.auth and st.session_state.role == "doctor":
             st.session_state.posts.append(new_post)
 
         for p in st.session_state.posts[::-1]:
-            st.write("🩺",p)
+            st.write("🩺", p)
 
 
 # -------------------------
@@ -233,24 +226,19 @@ if st.session_state.auth and st.session_state.role == "admin":
 
     st.write("Admin can create doctor accounts but cannot change passwords.")
 
-    # show doctors
     df = pd.read_sql("SELECT username FROM doctors",conn)
 
     st.subheader("Doctor Accounts")
-
     st.dataframe(df,use_container_width=True)
 
-    # add doctor
     st.subheader("Create Doctor Account")
 
     new_user = st.text_input("Doctor Username")
-
     new_pw = st.text_input("Initial Password")
 
     if st.button("Create Doctor"):
 
         try:
-
             cursor.execute(
                 "INSERT INTO doctors (username,password) VALUES (?,?)",
                 (new_user,new_pw)
@@ -261,5 +249,4 @@ if st.session_state.auth and st.session_state.role == "admin":
             st.success("Doctor created")
 
         except:
-
             st.error("Username already exists")
