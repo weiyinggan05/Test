@@ -146,17 +146,53 @@ if st.session_state.auth and st.session_state.role == "doctor":
     # Reservations
     elif page == "Reservations":
 
-        st.title("Patient Reservations")
+    st.title("Patient Reservations")
 
-        data = {
-            "Time":["09:00","11:30"],
-            "Patient":["Alice Tan","Bob Smith"],
-            "Status":["Confirmed","Pending"]
-        }
+    # 初始化 reservation list
+    if "reservations" not in st.session_state:
+        st.session_state.reservations = [
+            {"Time":"09:00","Patient":"Alice Tan","Status":"Confirmed"},
+            {"Time":"11:30","Patient":"Bob Smith","Status":"Pending"}
+        ]
 
-        df = pd.DataFrame(data)
+    # Add reservation button
+    if st.button("➕ Add Reservation"):
+        st.session_state.show_form = True
 
-        st.dataframe(df,use_container_width=True)
+    # Form
+    if st.session_state.get("show_form", False):
+
+        with st.form("reservation_form"):
+
+            patient = st.text_input("Patient Name")
+
+            time = st.text_input("Time (example: 14:30)")
+
+            status = st.selectbox(
+                "Status",
+                ["Confirmed","Pending","Cancelled"]
+            )
+
+            submit = st.form_submit_button("Create Reservation")
+
+            if submit:
+
+                new_reservation = {
+                    "Time": time,
+                    "Patient": patient,
+                    "Status": status
+                }
+
+                st.session_state.reservations.append(new_reservation)
+
+                st.session_state.show_form = False
+
+                st.success("Reservation added")
+
+    # Show table
+    df = pd.DataFrame(st.session_state.reservations)
+
+    st.dataframe(df, use_container_width=True)
 
     # Alerts
     elif page == "Alerts":
