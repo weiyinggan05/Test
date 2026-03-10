@@ -153,7 +153,7 @@ if not st.session_state.auth:
         u = st.text_input("ID", placeholder="Enter ID", label_visibility="collapsed")
         p = st.text_input("Key", type="password", placeholder="Security Key", label_visibility="collapsed")
         if st.form_submit_button("AUTHENTICATE SYSTEM"):
-            if u == "doctor1" and p == "mediflow2026":
+            if u == "doctor2" and p == "mediflow2026":
                 st.session_state.auth = True; st.rerun()
 else:
     today_str = date.today().strftime("%Y-%m-%d")
