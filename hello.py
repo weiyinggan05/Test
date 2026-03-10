@@ -225,7 +225,29 @@ if not st.session_state.auth:
         u = st.text_input("ID", placeholder="Enter ID", label_visibility="collapsed")
         p = st.text_input("Key", type="password", placeholder="Security Key", label_visibility="collapsed")
         if st.form_submit_button("AUTHENTICATE SYSTEM"):
-            if u == "doctor1" and p == "mediflow2026":
+            doctors = load_doctors()
+
+user = doctors[
+    (doctors["username"] == u) &
+    (doctors["password"] == p)
+]
+
+if not user.empty:
+
+    st.session_state.auth = True
+    st.session_state.current_user = u
+
+    following_str = user.iloc[0]["following"]
+
+    if pd.isna(following_str) or following_str == "":
+        st.session_state.following_list = set()
+    else:
+        st.session_state.following_list = set(following_str.split("|"))
+
+    st.rerun()
+
+else:
+    st.error("Invalid ID or Security Key")
                 st.session_state.auth = True; st.rerun()
 else:
     today_str = date.today().strftime("%Y-%m-%d")
