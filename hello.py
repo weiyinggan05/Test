@@ -1,7 +1,6 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-from datetime import date
 
 # -------------------------
 # DATABASE
@@ -45,17 +44,8 @@ if cursor.fetchone()[0] == 0:
 conn.commit()
 
 # -------------------------
-# SESSION
+# DOCTOR PROFILE DATA
 # -------------------------
-if "auth" not in st.session_state:
-    st.session_state.auth = False
-
-if "role" not in st.session_state:
-    st.session_state.role = None
-
-if "show_form" not in st.session_state:
-    st.session_state.show_form = False
-
 DOCTOR_PROFILE = {
     "name": "Dr. John Doe",
     "specialty": "Consultant Physician",
@@ -72,12 +62,6 @@ and preventive healthcare.
         "Board Certified Internal Medicine"
     ],
 
-    "achievements": [
-        "Published 30+ medical research papers",
-        "Top Physician Award 2022",
-        "Member of American College of Physicians"
-    ],
-
     "stats": {
         "Patients Treated": "1200+",
         "Research Papers": "34",
@@ -86,6 +70,57 @@ and preventive healthcare.
 
     "photo": "doctor.jpg"
 }
+
+# -------------------------
+# SESSION
+# -------------------------
+if "auth" not in st.session_state:
+    st.session_state.auth = False
+
+if "role" not in st.session_state:
+    st.session_state.role = None
+
+if "show_form" not in st.session_state:
+    st.session_state.show_form = False
+
+# -------------------------
+# CSS FOR LAYERS
+# -------------------------
+st.markdown("""
+<style>
+
+.layer1{
+background:#E8F5E9;
+padding:25px;
+border-radius:15px;
+margin-bottom:20px;
+}
+
+.layer2{
+background:#E3F2FD;
+padding:25px;
+border-radius:15px;
+margin-bottom:20px;
+}
+
+.layer3{
+background:#FFF3E0;
+padding:25px;
+border-radius:15px;
+margin-bottom:20px;
+}
+
+.badge{
+background:#4CAF50;
+color:white;
+padding:6px 12px;
+border-radius:20px;
+margin-right:6px;
+font-size:13px;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # -------------------------
 # LOGIN PAGE
@@ -134,7 +169,6 @@ if not st.session_state.auth:
             else:
                 st.error("Username must start with doctor or admin")
 
-
 # -------------------------
 # DOCTOR SYSTEM
 # -------------------------
@@ -147,52 +181,68 @@ if st.session_state.auth and st.session_state.role == "doctor":
         ["Homepage","Tasks","Reservations","Alerts","Community"]
     )
 
-    #Homepage
+    # -------------------------
+    # HOMEPAGE PROFILE
+    # -------------------------
     if page == "Homepage":
 
-    st.title("Doctor Profile")
+        st.title("Doctor Profile")
 
-    col1, col2 = st.columns([1,2])
+        # Layer 1
+        st.markdown('<div class="layer1">', unsafe_allow_html=True)
 
-    # Doctor Photo
-    with col1:
-        st.image(DOCTOR_PROFILE["photo"], width=220)
+        col1, col2 = st.columns([1,3])
 
-    # Doctor Info
-    with col2:
+        with col1:
+            st.image(DOCTOR_PROFILE["photo"], width=180)
 
-        st.subheader(DOCTOR_PROFILE["name"])
-        st.write(DOCTOR_PROFILE["specialty"])
+        with col2:
+            st.subheader(DOCTOR_PROFILE["name"])
+            st.write(DOCTOR_PROFILE["specialty"])
 
-        st.markdown("### Description")
-        st.write(DOCTOR_PROFILE["description"])
+            st.markdown("### Description")
+            st.write(DOCTOR_PROFILE["description"])
 
-    st.divider()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Education
-    st.markdown("### 🎓 Education")
-    for edu in DOCTOR_PROFILE["education"]:
-        st.write("•", edu)
+        # Layer 2
+        st.markdown('<div class="layer2">', unsafe_allow_html=True)
 
-    st.divider()
+        st.markdown("### 🎓 Educational Background")
 
-    # Achievements
-    st.markdown("### 🏆 Achievements")
-    for a in DOCTOR_PROFILE["achievements"]:
-        st.write("•", a)
+        for edu in DOCTOR_PROFILE["education"]:
+            st.write("•", edu)
 
-    st.divider()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Stats Cards
-    st.markdown("### 📊 Professional Statistics")
+        # Layer 3
+        st.markdown('<div class="layer3">', unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3)
+        st.markdown("### 🏆 Research & Experience")
 
-    col1.metric("Patients Treated", DOCTOR_PROFILE["stats"]["Patients Treated"])
-    col2.metric("Research Papers", DOCTOR_PROFILE["stats"]["Research Papers"])
-    col3.metric("Rating", DOCTOR_PROFILE["stats"]["Rating"])
+        col1, col2 = st.columns(2)
 
-    # Tasks
+        with col1:
+            st.metric("Research Papers", DOCTOR_PROFILE["stats"]["Research Papers"])
+            st.metric("Patients Treated", DOCTOR_PROFILE["stats"]["Patients Treated"])
+
+        with col2:
+            st.metric("Experience", "12 Years")
+            st.metric("Rating", DOCTOR_PROFILE["stats"]["Rating"])
+
+        st.markdown("### Badges")
+
+        st.markdown("""
+<span class="badge">Top Physician</span>
+<span class="badge">Research Leader</span>
+<span class="badge">Cardiology Expert</span>
+""", unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # -------------------------
+    # TASKS
+    # -------------------------
     elif page == "Tasks":
 
         st.title("Daily Tasks")
@@ -208,7 +258,9 @@ if st.session_state.auth and st.session_state.role == "doctor":
         for t in st.session_state.tasks:
             st.write("•", t)
 
-    # Reservations
+    # -------------------------
+    # RESERVATIONS
+    # -------------------------
     elif page == "Reservations":
 
         st.title("Patient Reservations")
@@ -227,7 +279,7 @@ if st.session_state.auth and st.session_state.role == "doctor":
             with st.form("reservation_form"):
 
                 patient = st.text_input("Patient Name")
-                time = st.text_input("Time (example: 14:30)")
+                time = st.text_input("Time")
                 status = st.selectbox(
                     "Status",
                     ["Confirmed","Pending","Cancelled"]
@@ -251,7 +303,9 @@ if st.session_state.auth and st.session_state.role == "doctor":
         df = pd.DataFrame(st.session_state.reservations)
         st.dataframe(df, use_container_width=True)
 
-    # Alerts
+    # -------------------------
+    # ALERTS
+    # -------------------------
     elif page == "Alerts":
 
         st.title("Urgent Alerts")
@@ -265,7 +319,9 @@ if st.session_state.auth and st.session_state.role == "doctor":
         df = pd.DataFrame(alerts)
         st.dataframe(df,use_container_width=True)
 
-    # Community
+    # -------------------------
+    # COMMUNITY
+    # -------------------------
     elif page == "Community":
 
         st.title("Doctor Community")
@@ -280,7 +336,6 @@ if st.session_state.auth and st.session_state.role == "doctor":
 
         for p in st.session_state.posts[::-1]:
             st.write("🩺", p)
-
 
 # -------------------------
 # ADMIN SYSTEM
