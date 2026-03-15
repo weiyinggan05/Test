@@ -1,2 +1,0 @@
-# Test
-Prepareration of hackathon
